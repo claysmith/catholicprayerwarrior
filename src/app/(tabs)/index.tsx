@@ -8,7 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { prayers } from '@/data/prayers';
-import { usePrayerTracker, useDailyProgress } from '@/hooks/use-prayer-tracker';
+import { usePrayerTracker, useCountTracker, useDailyProgress } from '@/hooks/use-prayer-tracker';
 
 function PrayerCardWithTracker({
   prayerId,
@@ -16,6 +16,7 @@ function PrayerCardWithTracker({
   description,
   isExternal,
   externalUrl,
+  trackingType,
   onPress,
 }: {
   prayerId: string;
@@ -23,18 +24,34 @@ function PrayerCardWithTracker({
   description: string;
   isExternal?: boolean;
   externalUrl?: string;
+  trackingType?: 'daily' | 'count';
   onPress: () => void;
 }) {
-  const { isPrayedToday, togglePrayer } = usePrayerTracker(prayerId);
+  const daily = usePrayerTracker(prayerId);
+  const countTracking = useCountTracker(prayerId);
+
+  if (trackingType === 'count') {
+    return (
+      <PrayerCard
+        title={title}
+        description={description}
+        isExternal={isExternal}
+        count={countTracking.count}
+        onPress={onPress}
+        onIncrement={countTracking.increment}
+        onDecrement={countTracking.decrement}
+      />
+    );
+  }
 
   return (
     <PrayerCard
       title={title}
       description={description}
       isExternal={isExternal}
-      isPrayedToday={isPrayedToday}
+      isPrayedToday={daily.isPrayedToday}
       onPress={onPress}
-      onToggle={togglePrayer}
+      onToggle={daily.togglePrayer}
     />
   );
 }
@@ -42,8 +59,8 @@ function PrayerCardWithTracker({
 export default function HomeScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
-  const prayerIds = prayers.map((p) => p.id);
-  const { completedCount, totalPrayers } = useDailyProgress(prayerIds);
+  const prayerProgress = prayers.map((p) => ({ id: p.id, trackingType: p.trackingType }));
+  const { completedCount, totalPrayers } = useDailyProgress(prayerProgress);
 
   const allPrayed = completedCount === totalPrayers;
 
@@ -82,6 +99,7 @@ export default function HomeScreen() {
               prayerId={prayer.id}
               title={prayer.title}
               description={prayer.description}
+              trackingType={prayer.trackingType}
               isExternal={prayer.type === 'external'}
               externalUrl={prayer.externalUrl}
               onPress={() => handlePrayerPress(prayer)}
@@ -97,13 +115,11 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
+  contentContainer: {},
   container: {
+    alignSelf: 'center',
+    width: '100%',
     maxWidth: MaxContentWidth,
-    flexGrow: 1,
   },
   header: {
     alignItems: 'center',

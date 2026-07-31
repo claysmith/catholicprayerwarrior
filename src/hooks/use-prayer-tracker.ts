@@ -62,7 +62,74 @@ export function usePrayerTracker(prayerId: string, onToggle?: () => void) {
   return { isPrayedToday, isLoading, togglePrayer };
 }
 
-export function useDailyProgress(prayerIds: string[]) {
+export function useCountTracker(prayerId: string, onToggle?: () => void) {
+  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadCount();
+  }, [prayerId]);
+
+  async function loadCount() {
+    try {
+      const stored = await AsyncStorage.getItem(getStorageKey(prayerId));
+      if (stored && stored.startsWith('{')) {
+        const parsed = JSON.parse(stored);
+        if (parsed.date === getTodayKey()) {
+          setCount(parsed.count);
+        } else {
+          setCount(0);
+        }
+      } else {
+        setCount(0);
+      }
+    } catch {
+      setCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const increment = useCallback(async () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    try {
+      await AsyncStorage.setItem(
+        getStorageKey(prayerId),
+        JSON.stringify({ date: getTodayKey(), count: newCount }),
+      );
+      onToggle?.();
+      notifyPrayerToggled();
+    } catch {
+      setCount(count);
+    }
+  }, [prayerId, count, onToggle]);
+
+  const decrement = useCallback(async () => {
+    const newCount = Math.max(0, count - 1);
+    setCount(newCount);
+    try {
+      if (newCount > 0) {
+        await AsyncStorage.setItem(
+          getStorageKey(prayerId),
+          JSON.stringify({ date: getTodayKey(), count: newCount }),
+        );
+      } else {
+        await AsyncStorage.removeItem(getStorageKey(prayerId));
+      }
+      onToggle?.();
+      notifyPrayerToggled();
+    } catch {
+      setCount(count);
+    }
+  }, [prayerId, count, onToggle]);
+
+  return { count, isLoading, increment, decrement };
+}
+
+export type PrayerProgressItem = { id: string; trackingType?: 'daily' | 'count' };
+
+export function useDailyProgress(prayerInputs: PrayerProgressItem[]) {
   const [completedCount, setCompletedCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [tick, setTick] = useState(0);
@@ -77,17 +144,30 @@ export function useDailyProgress(prayerIds: string[]) {
 
   useEffect(() => {
     loadProgress();
-  }, [prayerIds.join(','), tick]);
+  }, [prayerInputs.map((p) => p.id).join(','), tick]);
 
   async function loadProgress() {
     try {
       const today = getTodayKey();
       let count = 0;
 
-      for (const id of prayerIds) {
+      for (const { id, trackingType } of prayerInputs) {
         const stored = await AsyncStorage.getItem(getStorageKey(id));
-        if (stored === today) {
-          count++;
+        if (trackingType === 'count') {
+          if (stored && stored.startsWith('{')) {
+            try {
+              const parsed = JSON.parse(stored);
+              if (parsed.date === today && parsed.count > 0) {
+                count++;
+              }
+            } catch {
+              // malformed storage, skip
+            }
+          }
+        } else {
+          if (stored === today) {
+            count++;
+          }
         }
       }
 
@@ -99,5 +179,5 @@ export function useDailyProgress(prayerIds: string[]) {
     }
   }
 
-  return { completedCount, totalPrayers: prayerIds.length, isLoading };
+  return { completedCount, totalPrayers: prayerInputs.length, isLoading };
 }

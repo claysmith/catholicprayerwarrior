@@ -15,9 +15,58 @@ export interface Prayer {
   type: 'internal' | 'external';
   externalUrl?: string;
   sections: PrayerSection[];
+  trackingType?: 'daily' | 'count';
 }
 
 export const prayers: Prayer[] = [
+  {
+    id: 'rosary',
+    title: 'The Holy Rosary',
+    description:
+      'Pray the Rosary daily using the Rosary Center PWA. Meditate on the mysteries of the faith with guided prayers.',
+    type: 'external',
+    externalUrl: 'https://www.rosarycenter.org/pwa',
+    sections: [],
+  },
+  {
+    id: 'angelus',
+    title: 'The Angelus',
+    description:
+      'Commemorating the Incarnation. Traditionally prayed at 6am, noon, and 6pm. Track each time you pray it.',
+    type: 'internal',
+    trackingType: 'count',
+    sections: [
+      {
+        title: 'The Angelus',
+        steps: [
+          {
+            label: 'V. The Angel of the Lord declared unto Mary.',
+            text: 'R. And she conceived of the Holy Spirit.\n\nHail Mary, full of grace! The Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+          },
+          {
+            label: 'V. Behold the handmaid of the Lord.',
+            text: 'R. Be it done unto me according to Thy word.\n\nHail Mary, full of grace! The Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+          },
+          {
+            label: 'V. And the Word was made flesh.',
+            text: 'R. And dwelt among us.\n\nHail Mary, full of grace! The Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+          },
+          {
+            label: 'V. Pray for us, O Holy Mother of God.',
+            text: 'R. That we may be made worthy of the promises of Christ.',
+          },
+          {
+            label: 'Let Us Pray',
+            text: 'Pour forth, we beseech Thee, O Lord, Thy grace into our hearts, that we, to whom the Incarnation of Christ Thy Son was made known by the message of an angel, may by His Passion and Cross be brought to the glory of His Resurrection, through the same Christ Our Lord. Amen.',
+          },
+          {
+            label: 'Glory Be',
+            text: 'Glory be to the Father, and to the Son, and to the Holy Spirit, as it was in the beginning, is now, and ever shall be, world without end. Amen.',
+          },
+        ],
+      },
+    ],
+  },
   {
     id: 'divine-mercy',
     title: 'The Chaplet of Divine Mercy',
@@ -413,15 +462,6 @@ export const prayers: Prayer[] = [
         ],
       },
     ],
-  },
-  {
-    id: 'rosary',
-    title: 'The Holy Rosary',
-    description:
-      'Pray the Rosary daily using the Rosary Center PWA. Meditate on the mysteries of the faith with guided prayers.',
-    type: 'external',
-    externalUrl: 'https://www.rosarycenter.org/pwa',
-    sections: [],
   },
   {
     id: 'auxilium-christianorum',

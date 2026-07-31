@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "catholicprayerwarrior",
+    "name": "Catholic Prayer Warrior",
     "slug": "catholicprayerwarrior",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "scheme": "catholicprayerwarrior",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/AppIcon.icon",
       "bundleIdentifier": "com.claysmithr.catholicprayerwarrior",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

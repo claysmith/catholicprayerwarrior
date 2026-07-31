@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ScrollView, StyleSheet, Pressable } from 'react-native';
+import { ScrollView, StyleSheet, Pressable, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 
@@ -61,7 +61,7 @@ export default function PrayerScreen() {
           <ThemedView key={sectionIndex} style={styles.section}>
             <ThemedView style={styles.sectionHeader}>
               <ThemedView style={styles.sectionDot} />
-              <ThemedText type="smallBold" themeColor="accentGold">
+              <ThemedText type="smallBold" themeColor="accentGold" style={styles.sectionTitle}>
                 {section.title}
               </ThemedText>
             </ThemedView>
@@ -72,9 +72,9 @@ export default function PrayerScreen() {
                   <ThemedText type="small" themeColor="accent" style={styles.stepLabel}>
                     {step.label}
                   </ThemedText>
-                  <ThemedText type="default" style={styles.stepText}>
+                  <Text style={[styles.stepText, { color: theme.text }]}>
                     {step.text}
-                  </ThemedText>
+                  </Text>
                 </ThemedView>
               ))}
             </ThemedView>
@@ -89,13 +89,11 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
+  contentContainer: {},
   container: {
+    alignSelf: 'center',
+    width: '100%',
     maxWidth: MaxContentWidth,
-    flexGrow: 1,
   },
   centered: {
     flex: 1,
@@ -123,6 +121,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   section: {
+    width: '100%',
     paddingHorizontal: Spacing.four,
     marginBottom: Spacing.four,
   },
@@ -135,6 +134,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(197, 165, 90, 0.2)',
   },
+  sectionTitle: {
+    flexShrink: 1,
+  },
   sectionDot: {
     width: 6,
     height: 6,
@@ -142,10 +144,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#D4AF37',
   },
   stepsContainer: {
+    width: '100%',
     gap: Spacing.three,
   },
   step: {
+    width: '100%',
     gap: Spacing.one,
+    paddingBottom: Spacing.two,
   },
   stepLabel: {
     fontWeight: '600',
@@ -153,6 +158,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   stepText: {
-    lineHeight: 26,
+    fontSize: 16,
+    fontWeight: '500',
+    paddingRight: Spacing.two,
   },
 });

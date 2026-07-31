@@ -13,11 +13,11 @@ A Catholic daily prayer companion app built with Expo SDK 57. Track daily prayer
 
 ## Features
 
-- **Four daily prayers**: Chaplet of Divine Mercy, Chaplet of St. Michael, The Holy Rosary, Auxilium Christianorum
-- **Full prayer text** for Divine Mercy and St. Michael (scrollable in-app)
+- **Five daily prayers**: The Holy Rosary, The Angelus, Chaplet of Divine Mercy, Chaplet of St. Michael, Auxilium Christianorum
+- **Full prayer text** for Angelus, Divine Mercy, and St. Michael (scrollable in-app)
 - **External links** for Rosary (rosarycenter.org/pwa) and Auxilium Christianorum (App Store)
-- **Daily prayer tracking** with toggle checkmarks on each card
-- **Progress counter** ("2 of 4 prayed today" / "All prayers completed today — Deus vult!")
+- **Daily prayer tracking** with toggle checkmarks (daily) or [-][N][+] counter (Angelus, counted 3x/day)
+- **Progress counter** ("3 of 5 prayed today" / "All prayers completed today — Deus vult!")
 - **Dark / Light / System theme** with user-selectable preference (defaults to light)
 - **About screen** with appearance settings and credits
 
@@ -36,7 +36,7 @@ src/
 ├── components/
 │   ├── app-tabs.tsx             # Native tab bar (NativeTabs)
 │   ├── app-tabs.web.tsx         # Web tab bar (floating pill-style)
-│   ├── prayer-card.tsx          # Prayer card with toggle checkbox
+│   ├── prayer-card.tsx          # Prayer card with checkbox (daily) or [-][N][+] counter (count)
 │   ├── animated-icon.tsx        # Native animated splash
 │   ├── animated-icon.web.tsx    # Web animated splash
 │   ├── external-link.tsx        # Cross-platform external link (in-app browser)
@@ -48,7 +48,7 @@ src/
 ├── constants/
 │   └── theme.ts                  # Colors, Fonts, Spacing, layout constants
 ├── data/
-│   └── prayers.ts                # Prayer definitions (Divine Mercy, St. Michael, Rosary, Auxilium)
+│   └── prayers.ts                # Prayer definitions (Rosary, Angelus, Divine Mercy, St. Michael, Auxilium)
 ├── hooks/
 │   ├── use-color-scheme.ts       # Returns resolved scheme from context (native)
 │   ├── use-color-scheme.web.ts   # Returns resolved scheme from context (web, hydration-safe)
@@ -63,6 +63,18 @@ src/
 - **Platform-specific files**: `.web.tsx` suffixes for web-specific implementations (Metro resolves automatically)
 - **Theme colors**: `Colors.light` and `Colors.dark` in `src/constants/theme.ts` — always access via `useColorScheme()` hook (never `useColorScheme()` from `react-native` directly)
 - **Themed components**: `ThemedText` and `ThemedView` accept a `type` prop for variant styling
+
+## Theme System
+
+| Color Key | Light | Dark |
+|-----------|-------|------|
+| `text` | `#000000` | `#ffffff` |
+| `background` | `#ffffff` | `#0A0A0A` |
+| `backgroundElement` | `#F0F0F3` | `#1C1C1E` |
+| `backgroundSelected` | `#E0E1E6` | `#2C2C2E` |
+| `textSecondary` | `#60646C` | `#B0B4BA` |
+| `accent` | `#8B1A1A` | `#D4444A` |
+| `accentGold` | `#C5A55A` | `#D4AF37` |
 
 ## Scripts
 
@@ -81,6 +93,41 @@ npx tsc --noEmit        # TypeScript check
 Expo Go may not support SDK 57 yet. Use a development build:
 - **USB**: `npx expo run:ios` (requires Xcode + trusted device)
 - **Cloud**: `npx eas build --profile development --platform ios`
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `expo-router/unstable-native-tabs` | Native tab bar |
+| `react-native-reanimated` | Splash + collapsible animations |
+| `react-native-worklets` | Splash callback scheduling |
+| `expo-symbols` | Platform-native icons (SymbolView) |
+| `expo-web-browser` | In-app browser for external prayers |
+| `@react-native-async-storage/async-storage` | Theme + prayer tracking persistence |
+
+## Build & Distribution
+
+### Production Build (iOS)
+
+```bash
+eas build --platform ios --profile production
+```
+
+### Submit to App Store Connect
+
+```bash
+eas submit --platform ios --profile production
+```
+
+Requires an Apple Developer account and an App Store Connect record for bundle ID `com.claysmithr.catholicprayerwarrior`.
+
+### Development Build
+
+```bash
+npx expo run:ios
+# or
+eas build --profile development --platform ios
+```
 
 ## Credits
 
