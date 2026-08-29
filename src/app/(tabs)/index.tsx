@@ -4,10 +4,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 
 import { PrayerCard } from '@/components/prayer-card';
+import { StreakHistory } from '@/components/streak-history';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { prayers } from '@/data/prayers';
+import { usePrayerStreak } from '@/hooks/use-prayer-history';
+import { useSelectedPrayers } from '@/hooks/use-selected-prayers';
 import { usePrayerTracker, useCountTracker, useDailyProgress } from '@/hooks/use-prayer-tracker';
 
 function PrayerCardWithTracker({
@@ -59,10 +62,15 @@ function PrayerCardWithTracker({
 export default function HomeScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
-  const prayerProgress = prayers.map((p) => ({ id: p.id, trackingType: p.trackingType }));
-  const { completedCount, totalPrayers } = useDailyProgress(prayerProgress);
+  const allPrayerIds = prayers.map((p) => p.id);
+  const { selected } = useSelectedPrayers(allPrayerIds);
 
-  const allPrayed = completedCount === totalPrayers;
+  const visiblePrayers = prayers.filter((p) => selected.has(p.id));
+  const prayerProgress = visiblePrayers.map((p) => ({ id: p.id, trackingType: p.trackingType }));
+  const { completedCount, totalPrayers } = useDailyProgress(prayerProgress);
+  const { streak, longest, week } = usePrayerStreak(prayerProgress);
+
+  const allPrayed = totalPrayers > 0 && completedCount === totalPrayers;
 
   function handlePrayerPress(prayer: (typeof prayers)[number]) {
     if (prayer.type === 'external' && prayer.externalUrl) {
@@ -92,8 +100,10 @@ export default function HomeScreen() {
           </ThemedText>
         </ThemedView>
 
+        <StreakHistory streak={streak} longest={longest} week={week} />
+
         <ThemedView style={styles.prayerList}>
-          {prayers.map((prayer) => (
+          {visiblePrayers.map((prayer) => (
             <PrayerCardWithTracker
               key={prayer.id}
               prayerId={prayer.id}
@@ -136,5 +146,6 @@ const styles = StyleSheet.create({
   },
   prayerList: {
     gap: Spacing.two,
+    marginTop: Spacing.three,
   },
 });

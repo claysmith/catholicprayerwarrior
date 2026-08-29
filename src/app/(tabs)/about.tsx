@@ -1,14 +1,15 @@
 import { ScrollView, StyleSheet, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SymbolView } from 'expo-symbols';
 
 import { ExternalLink } from '@/components/external-link';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useThemeContext, type ThemePreference } from '@/contexts/theme-context';
-import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { REMINDER_SLOTS, usePrayerReminders } from '@/hooks/use-prayer-reminders';
+import { useSelectedPrayers } from '@/hooks/use-selected-prayers';
+import { prayers } from '@/data/prayers';
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'dark', label: 'Dark' },
@@ -16,11 +17,20 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'system', label: 'System' },
 ];
 
+function formatTime(hour: number, minute: number): string {
+  const period = hour < 12 ? 'AM' : 'PM';
+  let displayHour = hour % 12;
+  if (displayHour === 0) displayHour = 12;
+  return `${displayHour}:${String(minute).padStart(2, '0')} ${period}`;
+}
+
 export default function AboutScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const { colorScheme, setColorScheme } = useThemeContext();
   const scheme = useColorScheme();
   const colors = Colors[scheme];
+  const { enabled, available, toggleReminder } = usePrayerReminders();
+  const { selected, toggle } = useSelectedPrayers(prayers.map((p) => p.id));
 
   return (
     <ScrollView
@@ -79,6 +89,106 @@ export default function AboutScreen() {
           </ThemedView>
         </ThemedView>
 
+        <ThemedView style={styles.section}>
+          <ThemedText type="smallBold" style={styles.sectionTitle}>
+            Daily Prayers
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.text}>
+            Choose which prayers to include in your daily routine. The home screen and progress
+            counter only show selected prayers.
+          </ThemedText>
+
+          <ThemedView type="backgroundElement" style={styles.settingsCard}>
+            {prayers.map((prayer) => {
+              const isOn = selected.has(prayer.id);
+              const isLast = selected.size === 1 && isOn;
+              return (
+                <Pressable
+                  key={prayer.id}
+                  onPress={() => toggle(prayer.id)}
+                  style={({ pressed }) => [styles.optionRow, pressed && styles.pressed]}>
+                  <View style={styles.reminderInfo}>
+                    <ThemedText type="default" style={styles.optionLabel}>
+                      {prayer.title}
+                    </ThemedText>
+                    {isLast && (
+                      <ThemedText type="small" themeColor="textSecondary">
+                        At least one prayer required
+                      </ThemedText>
+                    )}
+                  </View>
+                  <View
+                    style={[
+                      styles.switch,
+                      { backgroundColor: isOn ? colors.accentGold : colors.backgroundSelected },
+                    ]}>
+                    <View
+                      style={[
+                        styles.switchKnob,
+                        isOn ? styles.switchKnobOn : styles.switchKnobOff,
+                        { backgroundColor: isOn ? colors.background : colors.textSecondary },
+                      ]}
+                    />
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ThemedView>
+        </ThemedView>
+
+        <ThemedView style={styles.section}>
+          <ThemedText type="smallBold" style={styles.sectionTitle}>
+            Prayer Reminders
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.text}>
+            Receive daily notifications to remind you to pray.
+          </ThemedText>
+
+          {!available ? (
+            <ThemedView type="backgroundElement" style={styles.settingsCard}>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.unavailableText}>
+                Notifications require a development build. Run &quot;npx expo run:ios&quot; to enable prayer
+                reminders.
+              </ThemedText>
+            </ThemedView>
+          ) : (
+            <ThemedView type="backgroundElement" style={styles.settingsCard}>
+              {REMINDER_SLOTS.map((slot) => {
+                const isOn = !!enabled[slot.id];
+                const timeLabel = formatTime(slot.hour, slot.minute);
+                return (
+                  <Pressable
+                    key={slot.id}
+                    onPress={() => toggleReminder(slot)}
+                    style={({ pressed }) => [styles.optionRow, pressed && styles.pressed]}>
+                    <View style={styles.reminderInfo}>
+                      <ThemedText type="default" style={styles.optionLabel}>
+                        {slot.label}
+                      </ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {timeLabel}
+                      </ThemedText>
+                    </View>
+                    <View
+                      style={[
+                        styles.switch,
+                        { backgroundColor: isOn ? colors.accentGold : colors.backgroundSelected },
+                      ]}>
+                      <View
+                        style={[
+                          styles.switchKnob,
+                          isOn ? styles.switchKnobOn : styles.switchKnobOff,
+                          { backgroundColor: isOn ? colors.background : colors.textSecondary },
+                        ]}
+                      />
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </ThemedView>
+          )}
+        </ThemedView>
+
         <ThemedView style={styles.footer}>
           <ThemedText type="small" themeColor="textSecondary" style={styles.credit}>
             Made by Clay Smith at{' '}
@@ -131,6 +241,10 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     overflow: 'hidden',
   },
+  unavailableText: {
+    padding: Spacing.three,
+    lineHeight: 20,
+  },
   footer: {
     paddingHorizontal: Spacing.four,
     alignItems: 'center',
@@ -152,6 +266,28 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontWeight: '500',
+  },
+  reminderInfo: {
+    flex: 1,
+    gap: Spacing.half,
+  },
+  switch: {
+    width: 44,
+    height: 26,
+    borderRadius: 13,
+    padding: 2,
+    justifyContent: 'center',
+  },
+  switchKnob: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+  },
+  switchKnobOn: {
+    alignSelf: 'flex-end',
+  },
+  switchKnobOff: {
+    alignSelf: 'flex-start',
   },
   pressed: {
     opacity: 0.7,

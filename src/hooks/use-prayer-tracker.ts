@@ -12,7 +12,40 @@ function getStorageKey(prayerId: string): string {
   return `${STORAGE_KEY}_${prayerId}`;
 }
 
-let refreshListeners: Array<() => void> = [];
+export function dateToKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+}
+
+export async function loadCompletionForDate(
+  prayerInputs: PrayerProgressItem[],
+  dateKey: string,
+): Promise<{ completedCount: number; totalPrayers: number }> {
+  let count = 0;
+  for (const { id, trackingType } of prayerInputs) {
+    const stored = await AsyncStorage.getItem(getStorageKey(id));
+    if (trackingType === 'count') {
+      if (stored && stored.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.date === dateKey && parsed.count > 0) {
+            count++;
+          }
+        } catch {
+          // malformed storage, skip
+        }
+      }
+    } else {
+      if (stored === dateKey) {
+        count++;
+      }
+    }
+  }
+  return { completedCount: count, totalPrayers: prayerInputs.length };
+}
+
+let refreshListeners: (() => void)[] = [];
 
 export function notifyPrayerToggled() {
   refreshListeners.forEach((fn) => fn());
@@ -148,30 +181,8 @@ export function useDailyProgress(prayerInputs: PrayerProgressItem[]) {
 
   async function loadProgress() {
     try {
-      const today = getTodayKey();
-      let count = 0;
-
-      for (const { id, trackingType } of prayerInputs) {
-        const stored = await AsyncStorage.getItem(getStorageKey(id));
-        if (trackingType === 'count') {
-          if (stored && stored.startsWith('{')) {
-            try {
-              const parsed = JSON.parse(stored);
-              if (parsed.date === today && parsed.count > 0) {
-                count++;
-              }
-            } catch {
-              // malformed storage, skip
-            }
-          }
-        } else {
-          if (stored === today) {
-            count++;
-          }
-        }
-      }
-
-      setCompletedCount(count);
+      const result = await loadCompletionForDate(prayerInputs, getTodayKey());
+      setCompletedCount(result.completedCount);
     } catch {
       setCompletedCount(0);
     } finally {

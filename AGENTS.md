@@ -12,33 +12,36 @@ A Catholic daily prayer companion app. Expo SDK 57, React Native 0.86, TypeScrip
 - **Tab layout** (`src/app/(tabs)/_layout.tsx`): Delegates to `AppTabs` component.
 - **Routing**: File-based via expo-router with typed routes enabled. `prayer/[id]` uses `presentation: 'card'` with `slide_from_right` animation.
 - **Theme system**: `ThemeContext` in `src/contexts/theme-context.tsx` manages dark/light/system preference, persisted to AsyncStorage key `app_color_scheme`. Default preference: **light**. Resolves to `'dark' | 'light'` (never `'unspecified'`).
-- **Splash screen**: `expo-splash-screen` prevented from auto-hide, then `AnimatedSplashOverlay` handles animated transition with `react-native-reanimated` Keyframes.
+- **Splash screen**: `expo-splash-screen` prevented from auto-hide, then `AnimatedSplashOverlay` handles animated transition with `react-native-reanimated` Keyframes. Splash background: `#8B1A1A` (maroon). Uses `splash-icon.png` (96px, 20px border radius). Staggered entrance: icon springs in (`ZoomIn` with damped spring, 600ms) → gold divider (`#C5A55A`) → app name "Catholic Prayer Warrior" (white, 24px) → tagline "Pray without ceasing" (gold, uppercase). Total duration 1600ms: holds at full opacity until 55%, then fades out with `Easing.bezier(0.4, 0, 0.2, 1)` (Material standard easing). Native splash `imageWidth` in `app.json` set to 96 to match the animated overlay's icon size.
+- **Reminders**: `usePrayerReminders` hook schedules daily notifications via `expo-notifications` (DAILY trigger). Toggled from About screen. State persisted to AsyncStorage key `prayer_reminders`. Android channel `prayer-reminders`.
+- **Streak & history**: `usePrayerStreak` hook snapshots daily completion to AsyncStorage key `prayer_history`, computes current/longest streak and 7-day week grid. Displayed via `StreakHistory` component on Home.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `src/app/_layout.tsx` | Root layout: AppThemeProvider → ThemeProvider (expo-router) → AnimatedSplashOverlay + Stack |
-| `src/app/(tabs)/index.tsx` | Home screen: prayer list with daily progress counter |
-| `src/app/(tabs)/about.tsx` | About screen: theme radio buttons (Dark/Light/System) + credits |
+| `src/app/(tabs)/index.tsx` | Home screen: prayer list with daily progress counter + streak history |
+| `src/app/(tabs)/about.tsx` | About screen: theme radio buttons (Dark/Light/System) + reminder toggles + credits |
 | `src/app/prayer/[id].tsx` | Prayer detail screen: back button, title, description, scrollable sections/steps |
 | `src/contexts/theme-context.tsx` | ThemeProvider, useThemeContext — manages preference + resolved scheme |
 | `src/hooks/use-color-scheme.ts` | Native: returns `resolvedScheme` from context (always 'dark' or 'light') |
 | `src/hooks/use-color-scheme.web.ts` | Web: returns 'light' during hydration, then resolved scheme |
 | `src/hooks/use-theme.ts` | Returns full color palette for current scheme via `Colors[scheme]` |
-| `src/hooks/use-prayer-tracker.ts` | `usePrayerTracker(id)` per-prayer toggle, `useCountTracker(id)` for count-based prayers, `useDailyProgress(ids)` for counter. Uses AsyncStorage with date-based keys. Call `notifyPrayerToggled()` to refresh progress. |
-| `src/data/prayers.ts` | All prayer data. `type: 'internal'` = full text in app, `type: 'external'` = links out via expo-web-browser |
+| `src/hooks/use-prayer-tracker.ts` | `usePrayerTracker(id)` per-prayer toggle, `useCountTracker(id)` for count-based prayers, `useDailyProgress(ids)` for counter. Uses AsyncStorage with date-based keys. Call `notifyPrayerToggled()` to refresh progress. Exports `loadCompletionForDate(inputs, dateKey)` + `dateToKey(date)` helpers. |
+| `src/hooks/use-prayer-history.ts` | `usePrayerStreak(inputs)` — snapshots daily completion to AsyncStorage `prayer_history`, computes current/longest streak + 7-day week grid. Re-snapshots on `notifyPrayerToggled` listener. |
+| `src/hooks/use-prayer-reminders.ts` | `usePrayerReminders()` — schedules/cancels daily notifications via `expo-notifications`. Exports `REMINDER_SLOTS` (5 slots). State persisted to AsyncStorage `prayer_reminders`. Android channel `prayer-reminders`. |
+| `src/data/prayers.ts` | All prayer data (12 prayers). `type: 'internal'` = full text in app, `type: 'external'` = links out via expo-web-browser |
 | `src/components/prayer-card.tsx` | Card with icon + description + action widget (checkbox for daily, [-][N][+] counter for count). Counter sits below description in its own row. Checkbox inline to the right. All widgets are sibling Pressables to the navigation Pressable (not nested). |
+| `src/components/streak-history.tsx` | Streak counter (current + best) + 7-day week grid (gold=complete, accent=partial, grey=none, today outlined) + legend |
 | `src/components/app-tabs.tsx` | Native tab bar using `NativeTabs` from `expo-router/unstable-native-tabs` |
 | `src/components/app-tabs.web.tsx` | Web tab bar: floating pill-style with brand text + tab triggers |
 | `src/components/themed-text.tsx` | Theme-aware Text component. Types: default, title, small, smallBold, subtitle, link, linkPrimary, code |
 | `src/components/themed-view.tsx` | Theme-aware View component. Accepts `type` prop for `ThemeColor` background |
 | `src/components/external-link.tsx` | Cross-platform external link. Opens in-app browser on native via `expo-web-browser` |
 | `src/components/ui/collapsible.tsx` | Animated collapsible component using `react-native-reanimated` FadeIn |
-| `src/components/animated-icon.tsx` | Native animated splash overlay with Keyframe animations |
-| `src/components/animated-icon.web.tsx` | Web animated splash (returns null for overlay) |
-| `src/components/hint-row.tsx` | Hint row component (leftover from template) |
-| `src/components/web-badge.tsx` | Expo version badge (leftover from template) |
+| `src/components/animated-icon.tsx` | Native animated splash overlay: staggered entrance (icon ZoomIn → gold divider → app name → tagline), 1600ms total with cubic-bezier fade-out. Maroon `#8B1A1A` background, 96px `splash-icon.png` with 20px border radius |
+| `src/components/animated-icon.web.tsx` | Web animated splash (returns null for overlay; renders splash-icon.png for AnimatedIcon) |
 | `src/constants/theme.ts` | Colors (light/dark), Fonts, Spacing, BottomTabInset, MaxContentWidth |
 | `src/global.css` | CSS custom properties for web fonts (--font-display, --font-mono, --font-rounded, --font-serif) |
 
@@ -180,5 +183,5 @@ The row-direction pattern causes Yoga to calculate cross-axis (vertical) height 
 - EAS project ID: `6496b335-60a3-4566-b0e3-5cc8630394b3`
 - `BottomTabInset`: iOS = 50, Android = 80 (used for scroll content insets)
 - `MaxContentWidth`: 800 (constrains content on wide screens)
-- Splash background color: `#208AEF`
+- Splash background color: `#8B1A1A`
 - Android adaptive icon background: `#E6F4FE`

@@ -21,7 +21,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.claysmithr.catholicprayerwarrior"
     },
     "web": {
       "output": "static",
@@ -32,9 +33,15 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#8B1A1A",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 96
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#8B1A1A"
         }
       ]
     ],

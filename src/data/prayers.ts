@@ -472,6 +472,132 @@ export const prayers: Prayer[] = [
     externalUrl: 'https://apps.apple.com/us/app/auxilium-christianorum/id1422439529',
     sections: [],
   },
+  {
+    id: 'st-michael-short',
+    title: 'Prayer to St. Michael (Short)',
+    description:
+      'The short prayer to St. Michael the Archangel for protection, composed by Pope Leo XIII.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Prayer to St. Michael',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'St. Michael the Archangel, defend us in battle. Be our protection against the wickedness and snares of the devil. May God rebuke him, we humbly pray; and do thou, O Prince of the heavenly host, by the power of God cast into hell Satan and all the evil spirits who prowl about the world seeking the ruin of souls. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'memorare',
+    title: 'The Memorare',
+    description:
+      'A beloved prayer to the Blessed Virgin Mary, attributed to St. Bernard of Clairvaux.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'The Memorare',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'Remember, O most gracious Virgin Mary, that never was it known that anyone who fled to thy protection, implored thy help, or sought thy intercession was left unaided. Inspired by this confidence, I fly unto thee, O Virgin of virgins, my Mother. To thee do I come, before thee I stand, sinful and sorrowful. O Mother of the Word Incarnate, despise not my petitions, but in thy mercy hear and answer me. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'anima-christi',
+    title: 'Anima Christi (Soul of Christ)',
+    description:
+      'A profound Eucharistic prayer dating to the 14th century, often prayed after Communion.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Anima Christi',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'Soul of Christ, sanctify me. Body of Christ, save me. Blood of Christ, inebriate me. Water from the side of Christ, wash me. Passion of Christ, strengthen me. O Good Jesus, hear me. Within Thy wounds hide me. Permit me not to be separated from Thee. From the wicked foe defend me. At the hour of my death call me, and bid me come to Thee, that with Thy saints I may praise Thee, forever and ever. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'act-of-contrition',
+    title: 'Act of Contrition',
+    description:
+      'A prayer expressing sorrow for sin, traditionally prayed during the Sacrament of Penance.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Act of Contrition',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'O my God, I am heartily sorry for having offended Thee, and I detest all my sins because of Thy just punishments, but most of all because they offend Thee, my God, who art all good and deserving of all my love. I firmly resolve, with the help of Thy grace, to sin no more and to avoid the near occasion of sin. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'morning-offering',
+    title: 'Morning Offering',
+    description:
+      'Consecrate each day to the Sacred Heart of Jesus through the intercession of Mary.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Morning Offering',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'O Jesus, through the Immaculate Heart of Mary, I offer Thee my prayers, works, joys, and sufferings of this day, in union with the Holy Sacrifice of the Mass throughout the world. I offer them for all the intentions of Thy Sacred Heart: the salvation of souls, reparation for sin, and the reunion of all Christians. I offer them for the intentions of our bishops and of all Apostles of Prayer, and in particular for those recommended by our Holy Father this month. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'st-joseph',
+    title: 'Prayer to St. Joseph',
+    description:
+      'A prayer to St. Joseph, the foster father of Jesus and patron of the Universal Church.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Prayer to St. Joseph',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'O St. Joseph, whose protection is so great, so strong, so prompt before the throne of God, I place in thee all my interests and desires. O St. Joseph, do assist me by thy powerful intercession, and obtain for me from thy divine Son all spiritual blessings, through Jesus Christ, our Lord. So that, having engaged here below thy heavenly power, I may offer my thanksgiving and homage to the most loving of fathers. O St. Joseph, I never weary contemplating thee, and Jesus asleep in thine arms; I dare not approach while He reposes near thy heart. Press Him in my name and kiss His fine head for me and ask Him to return the kiss when I draw my dying breath. St. Joseph, patron of departing souls, pray for me. Amen.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'guardian-angel',
+    title: 'Prayer to Your Guardian Angel',
+    description:
+      'A traditional prayer to your guardian angel for protection and guidance throughout the day.',
+    type: 'internal',
+    sections: [
+      {
+        title: 'Prayer to Your Guardian Angel',
+        steps: [
+          {
+            label: 'Prayer',
+            text: 'Angel of God, my guardian dear, to whom God\'s love commits me here, ever this day be at my side, to light and guard, to rule and guide. Amen.',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getPrayerById(id: string): Prayer | undefined {
