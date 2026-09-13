@@ -48,9 +48,9 @@ A Catholic daily prayer companion app. Expo SDK 57, React Native 0.86, TypeScrip
 ## Prayers in the App
 
 1. **The Holy Rosary** (`rosary`) — external, links to https://www.rosarycenter.org/pwa. Tracking: daily toggle.
-2. **The Angelus** (`angelus`) — internal, full text (1 section: 6 versicle/response pairs + closing collect + Glory Be). Tracking: **count** (track number of times prayed per day, traditionally 3x at 6am/noon/6pm).
-3. **Chaplet of Divine Mercy** (`divine-mercy`) — internal, full text (7 sections: Opening + 5 Decades + Closing). Tracking: daily toggle.
-4. **Chaplet of St. Michael** (`st-michael`) — internal, full text (10 sections: Opening + 9 Salutations for angel choirs). Tracking: daily toggle.
+2. **The Angelus** (`angelus`) — internal, full text (1 section: 6 versicle/response pairs + closing collect + Glory Be). The Glory Be is said **3 times**. Tracking: **count** (track number of times prayed per day, traditionally 3x at 6am/noon/6pm).
+3. **Chaplet of Divine Mercy** (`divine-mercy`) — internal, full text (8 sections: Opening Prayers + Introductory Prayers + 5 Decades + Closing Prayers). Follows the official structure from the Diary of St. Faustina Kowalska (St. Faustina's Prayer for Sinners, the "O Blood and Water" triple, The Eternal Father + 10x "For the sake of His sorrowful Passion" per decade, Holy God x3, and the closing prayers). Tracking: daily toggle.
+4. **Chaplet of St. Michael** (`st-michael`) — internal, full text (12 sections: Opening Prayer + 9 Salutations + In Honor of the Leading Angels + Concluding Prayers). EWTN-aligned: the intercession prayer to each choir comes first, then **1 Our Father + 3 Hail Marys** (no Glory Be in salutations). Revealed to Antónia d'Astónaco in 1750, approved by Pope Pius IX in 1851. Tracking: daily toggle.
 5. **Auxilium Christianorum** (`auxilium-christianorum`) — external, links to https://apps.apple.com/us/app/auxilium-christianorum/id1422439529. Tracking: daily toggle.
 
 ## Adding a New Prayer
@@ -112,7 +112,7 @@ npx expo start --clear  # Clear cache and start dev server
 npx expo run:ios        # Build for iOS device
 npx expo run:android    # Build for Android
 npx expo start --web    # Start web version
-npx expo lint           # Lint
+npx expo lint           # Lint — React Compiler diagnostics are fatal errors; 0 errors expected
 eas build --platform ios --profile production  # Production EAS build
 eas submit --platform ios --profile production # Submit to App Store Connect
 ```
@@ -124,6 +124,12 @@ eas submit --platform ios --profile production # Submit to App Store Connect
 - Bundle ID: `com.claysmithr.catholicprayerwarrior`
 - EAS project ID: `6496b335-60a3-4566-b0e3-5cc8630394b3`
 - Build profiles in `eas.json`: `development` (dev client, internal), `preview` (internal), `production` (App Store)
+
+## React Compiler Lint
+
+The React Compiler is enabled (`experiments.reactCompiler: true`). The `eslint-plugin-react-hooks` (v7.1.1, bundled with `eslint-config-expo`) enforces React Compiler diagnostics as **errors**:
+
+- `react-hooks/set-state-in-effect` — calling setState in an effect is an error even when the setState runs after `await` inside an async function. The linter false-positively traces into `useCallback` functions and `async function` declarations called from the effect body. **Fix**: use an inline async IIFE inside the effect — `(async () => { ... })()` — rather than calling a named function.
 
 ## Known Rendering Issues
 

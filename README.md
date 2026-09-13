@@ -18,11 +18,50 @@ A Catholic daily prayer companion app built with Expo SDK 57. Track daily prayer
 - **Full prayer text** for all internal prayers (scrollable in-app)
 - **External links** for Rosary (rosarycenter.org/pwa) and Auxilium Christianorum (App Store)
 - **Daily prayer tracking** with toggle checkmarks (daily) or [-][N][+] counter (Angelus, counted 3x/day)
+- **Faithful prayer texts** — the Angelus closes with the Glory Be recited three times; the Chaplet of Divine Mercy follows the full official structure including the opening and closing prayers from St. Faustina's Diary; the Chaplet of St. Michael (revealed to Antónia d'Astónaco, approved by Pope Pius IX) follows the EWTN guide with each choir's intercessory prayer followed by one Our Father and three Hail Marys
 - **Progress counter** ("3 of 12 prayed today" / "All prayers completed today — Deus vult!")
 - **Streak & history** — current streak, longest streak, and a 7-day week grid showing complete/partial/none days
 - **Prayer reminders** — daily notifications for the Angelus (6 AM / noon / 6 PM) and morning/evening prayer
 - **Dark / Light / System theme** with user-selectable preference (defaults to light)
 - **About screen** with appearance settings, reminder toggles, and credits
+
+## App Store Listing
+
+### Promotional Text
+
+Pray without ceasing. Track twelve daily prayers, build your streak, and keep the Angelus with reminders at 6 AM, noon, and 6 PM.
+
+### Description
+
+Catholic Prayer Warrior is a daily prayer companion built around one simple goal: pray without ceasing.
+
+Keep your daily prayers close at hand with full texts for twelve beloved devotions — the Rosary, the Angelus, the Chaplets of Divine Mercy and St. Michael, the Morning Offering, the Memorare, the Act of Contrition, Anima Christi, prayers to St. Joseph, your Guardian Angel, and more. External devotions like the Rosary open in a beautiful in-app browser so nothing pulls you out of prayer.
+
+Built to build a habit:
+
+• Daily tracking — tap the checkmark when you've prayed; the Angelus tracks each of its three traditional times (6 AM, noon, 6 PM) with a simple counter.
+• Streaks & history — see your current and longest streak plus a 7-day grid marking complete, partial, and missed days.
+• Prayer reminders — gentle daily notifications for the Angelus, morning prayer, and evening prayer.
+• Beautiful, calm design — a warm maroon-and-gold theme inspired by the Church, with dark, light, or system appearance to match your day.
+
+All prayer data is stored privately on your device — no account, no ads, no tracking.
+
+Faithfully researched, faithful to the tradition:
+
+• The Angelus with the closing Glory Be recited three times
+• The Chaplet of Divine Mercy in its full official form, including the opening and closing prayers from the Diary of St. Faustina Kowalska
+• The Chaplet of St. Michael as revealed to the Servant of God Antónia d'Astónaco, approved by Pope Pius IX, with each choir's intercessory prayer followed by one Our Father and three Hail Marys
+
+Made by Clay Smith at claysweb.design.
+
+### What's New in 1.0.1
+
+Prayer text refinements based on official sources:
+
+• The Angelus now notes that the Glory Be is recited three times at the end.
+• The Chaplet of Divine Mercy has been restructured to follow the complete official format — including St. Faustina's Prayer for Sinners, the "O Blood and Water" invocation (said three times), and the full closing prayers from the Diary.
+• The Chaplet of St. Michael now follows the EWTN guide — the intercessory prayer to each choir comes first, followed by one Our Father and three Hail Marys (replacing the Glory Be in each salutation). The Principalities prayer has been corrected, and the Chaplet now includes four Our Fathers in honor of the leading Angels before the concluding prayers.
+• Credits and description for the St. Michael Chaplet have been updated to reflect its true history — revealed to Antónia d'Astónaco in 1750, approved by Pope Pius IX in 1851.
 
 ## Splash Screen
 
