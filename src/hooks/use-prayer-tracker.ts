@@ -56,23 +56,21 @@ export function usePrayerTracker(prayerId: string, onToggle?: () => void) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadStatus();
-  }, [prayerId]);
-
-  async function loadStatus() {
-    try {
-      const stored = await AsyncStorage.getItem(getStorageKey(prayerId));
-      if (stored) {
-        setIsPrayedToday(stored === getTodayKey());
-      } else {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(getStorageKey(prayerId));
+        if (stored) {
+          setIsPrayedToday(stored === getTodayKey());
+        } else {
+          setIsPrayedToday(false);
+        }
+      } catch {
         setIsPrayedToday(false);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setIsPrayedToday(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    })();
+  }, [prayerId]);
 
   const togglePrayer = useCallback(async () => {
     const today = getTodayKey();
@@ -100,28 +98,26 @@ export function useCountTracker(prayerId: string, onToggle?: () => void) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadCount();
-  }, [prayerId]);
-
-  async function loadCount() {
-    try {
-      const stored = await AsyncStorage.getItem(getStorageKey(prayerId));
-      if (stored && stored.startsWith('{')) {
-        const parsed = JSON.parse(stored);
-        if (parsed.date === getTodayKey()) {
-          setCount(parsed.count);
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(getStorageKey(prayerId));
+        if (stored && stored.startsWith('{')) {
+          const parsed = JSON.parse(stored);
+          if (parsed.date === getTodayKey()) {
+            setCount(parsed.count);
+          } else {
+            setCount(0);
+          }
         } else {
           setCount(0);
         }
-      } else {
+      } catch {
         setCount(0);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setCount(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    })();
+  }, [prayerId]);
 
   const increment = useCallback(async () => {
     const newCount = count + 1;
@@ -176,19 +172,17 @@ export function useDailyProgress(prayerInputs: PrayerProgressItem[]) {
   }, []);
 
   useEffect(() => {
-    loadProgress();
+    (async () => {
+      try {
+        const result = await loadCompletionForDate(prayerInputs, getTodayKey());
+        setCompletedCount(result.completedCount);
+      } catch {
+        setCompletedCount(0);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, [prayerInputs.map((p) => p.id).join(','), tick]);
-
-  async function loadProgress() {
-    try {
-      const result = await loadCompletionForDate(prayerInputs, getTodayKey());
-      setCompletedCount(result.completedCount);
-    } catch {
-      setCompletedCount(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   return { completedCount, totalPrayers: prayerInputs.length, isLoading };
 }
